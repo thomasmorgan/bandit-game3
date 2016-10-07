@@ -12,7 +12,7 @@ from sqlalchemy.sql.expression import cast
 from sqlalchemy import Integer
 from flask import Blueprint, Response
 from psiturk.psiturk_config import PsiturkConfig
-from wallace import db
+from dallinger import db
 config = PsiturkConfig()
 
 
@@ -21,7 +21,7 @@ class BanditGame(Experiment):
     def __init__(self, session):
         super(BanditGame, self).__init__(session)
 
-        """ Wallace parameters """
+        """ Experiment parameters """
         self.task = "The Bandit Game"
         self.verbose = False
         self.experiment_repeats = 1
@@ -33,7 +33,7 @@ class BanditGame(Experiment):
         self.initial_recruitment_size = self.generation_size
         self.known_classes["Pull"] = Pull
 
-        """ BanditGame parameters """
+        """ Task parameters """
         # how many bandits each node visits
         self.n_trials = 4
 
