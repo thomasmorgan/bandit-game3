@@ -1,5 +1,4 @@
 [Experiment Configuration]
-wallace_version = 0.5
 mode = deploy
 auto_recruit = true
 
@@ -12,37 +11,24 @@ lifetime = 24
 duration = 0.3
 us_only = true
 approve_requirement = 95
-contact_email_on_error = thomas.j.h.morgan@gmail.com
-ad_group = TreasureTiles
+contact_email_on_error = thomas.j.h.morgan@asu.edu
+ad_group = Foraging
 psiturk_keywords = memory
-organization_name = UC Berkeley
+organization_name = Arizona State University
 browser_exclude_rule = MSIE, mobile, tablet
 
 [Database Parameters]
-database_url = postgresql://postgres@localhost/wallace
+database_url = postgresql://postgres@localhost/dallinger
 table_name = psiturk
 anonymize_data = false
 database_size = standard-2
 
 [Server Parameters]
-host = 0.0.0.0
-port = 5000
-cutoff_time = 30
-logfile = -
-loglevel = 0
-debug = true
-login_username = examplename
-login_pw = examplepassword
-threads = auto
-notification_url = None
 dyno_type = performance-m
 num_dynos_web = 3
 num_dynos_worker = 1
-
-[Task Parameters]
-experiment_code_version = 1.0
-num_conds = 1
-num_counters = 1
+host = 0.0.0.0
+notification_url = None
 
 [Shell Parameters]
 launch_in_sandbox_mode = false
