@@ -5,12 +5,16 @@ $(document).ready(function() {
 
     $("#consent").click(function() {
         allow_exit();
-        window.location.href = '/instructions/instruct-1?hit_id={{ hit_id }}&assignment_id={{ assignment_id }}&worker_id={{ worker_id }}&mode={{ mode }}';
+        window.location.href = '/instructions/instruct-1?hit_id=' + hit_id + '&assignment_id=' + assignment_id + '&worker_id=' + worker_id + '&mode=' + mode;
     });
 
     $("#no-consent").click(function() {
         allow_exit();
         self.close();
+    });
+
+    $("#instruct-1-button-next").click(function() {
+        go_to_page("instructions/instruct-2");
     });
 });
 
