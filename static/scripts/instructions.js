@@ -4,8 +4,7 @@ $(document).ready(function() {
     });
 
     $("#consent").click(function() {
-        allow_exit();
-        window.location.href = '/instructions/instruct-1?hit_id=' + hit_id + '&assignment_id=' + assignment_id + '&worker_id=' + worker_id + '&mode=' + mode;
+        go_to_page("instructions/instruct-1");
     });
 
     $("#no-consent").click(function() {
