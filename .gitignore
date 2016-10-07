@@ -1,0 +1,7 @@
+*.pyc
+*.db
+*.log
+.coverage
+data/*
+snapshots/*
+-
