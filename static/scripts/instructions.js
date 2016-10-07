@@ -1,3 +1,18 @@
+$(document).ready(function() {
+    $("#print-consent").click(function() {
+        window.print();
+    });
+
+    $("#consent").click(function() {
+        allow_exit();
+        window.location.href = '/instructions/instruct-1';
+    });
+
+    $("#no-consent").click(function() {
+        allow_exit();
+        self.close();
+    });
+});
 
 insert_num_trials = function() {
     reqwest({
