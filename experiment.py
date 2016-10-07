@@ -1,10 +1,10 @@
 """ The Bandit Game! """
 
-from wallace.experiments import Experiment
-from wallace.nodes import Agent, Source
-from wallace.models import Info, Network, Vector, Participant
-from wallace.networks import DiscreteGenerational
-from wallace.information import Gene
+from dallinger.experiments import Experiment
+from dallinger.nodes import Agent, Source
+from dallinger.models import Info, Network, Vector, Participant
+from dallinger.networks import DiscreteGenerational
+from dallinger.information import Gene
 import random
 from json import dumps
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -25,13 +25,10 @@ class BanditGame(Experiment):
         self.task = "The Bandit Game"
         self.verbose = False
         self.experiment_repeats = 1
-        self.practice_repeats = 0
-        self.agent = BanditAgent
+
         self.generation_size = 5
         self.generations = 5
-        self.network = lambda: BanditGenerational(generations=self.generations,
-                                                  generation_size=self.generation_size,
-                                                  initial_source=True)
+
         self.bonus_payment = 0.6
         self.initial_recruitment_size = self.generation_size
         self.known_classes["Pull"] = Pull
@@ -83,27 +80,28 @@ class BanditGame(Experiment):
                 b.num_arms = self.n_options
                 b.good_arm = int(random.random()*self.n_options) + 1
 
-    def recruit(self):
-        self.log("running recruit")
-        participants = Participant.query.with_entities(Participant.status).all()
+    def create_network(self):
+        """Return a new network."""
+        return BanditGenerational(generations=self.generations,
+                                  generation_size=self.generation_size,
+                                  initial_source=True)
 
-        # if all network are full close recruitment
-        if not self.networks(full=False):
-            self.log("all networks full, closing recruitment")
-            self.recruiter().close_recruitment()
-        # if a complete generation has finished and no-one is playing, recruit
-        elif (len([p for p in participants if p.status == 101]) % self.generation_size == 0 and
-              not [p for p in participants if p.status < 100]):
+    def create_node(self, participant, network):
+        """Create a node for a participant."""
+        return BanditAgent(network=network, participant=participant)
+
+    def recruit(self):
+        """Recruit participants if necessary."""
+        num_approved = len(Participant.query.filter_by(status="approved").all())
+        if num_approved % self.generation_size == 0 and num_approved != self.generations*self.generation_size:
             self.log("generation finished, recruiting another")
             self.recruiter().recruit_participants(n=self.generation_size)
-        else:
-            self.log("generation not finished, not recruiting")
 
     def data_check(self, participant):
 
         # get the necessary data
         networks = Network.query.all()
-        nodes = BanditAgent.query.filter_by(participant_id=participant.unique_id).all()
+        nodes = BanditAgent.query.filter_by(participant_id=participant.id).all()
         node_ids = [n.id for n in nodes]
         genes = Gene.query.filter(Gene.origin_id.in_(node_ids)).all()
         incoming_vectors = Vector.query.filter(Vector.destination_id.in_(node_ids)).all()
@@ -162,7 +160,7 @@ class BanditGame(Experiment):
         networks_ids = [n.id for n in networks if n.role != "practice"]
 
         # query all nodes, bandits, pulls and Genes
-        nodes = BanditAgent.query.filter_by(participant_id=participant.unique_id).all()
+        nodes = BanditAgent.query.filter_by(participant_id=participant.id).all()
         nodes = [n for n in nodes if n.network_id in networks_ids]
         bandits = Bandit.query.all()
         node_ids = [n.id for n in nodes]
@@ -199,7 +197,7 @@ class BanditGame(Experiment):
 
     def attention_check(self, participant):
         bandits = Bandit.query.all()
-        nodes = BanditAgent.query.filter_by(participant_id=participant.unique_id).all()
+        nodes = BanditAgent.query.filter_by(participant_id=participant.id).all()
         pulls = []
         for node in nodes:
             pulls.extend(node.infos(type=Pull))
