@@ -12,4 +12,6 @@ $(document).ready(function() {
         allow_exit();
         self.close();
     });
+
+    create_participant();
 });
