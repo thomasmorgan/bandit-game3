@@ -74,11 +74,6 @@ class BanditGame(Experiment):
         for net in self.networks():
             source = GeneticSource(network=net)
             source.create_genes()
-            for bandit in range(self.n_bandits):
-                b = Bandit(network=net)
-                b.bandit_id = bandit
-                b.num_arms = self.n_options
-                b.good_arm = int(random.random()*self.n_options) + 1
 
     def create_network(self):
         """Return a new network."""
