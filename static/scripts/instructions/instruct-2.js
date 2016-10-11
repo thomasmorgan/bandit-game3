@@ -5,6 +5,6 @@ $(document).ready(function() {
     });
     $("#prev-button").click(function() {
         allow_exit();
-        go_to_page("instructions/instruct-2");
+        go_to_page("instructions/instruct-1");
     });
 });
