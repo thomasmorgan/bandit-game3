@@ -51,7 +51,7 @@ class BanditGame(Experiment):
 
         # how much each unit of memory costs fitness
         self.memory_cost = self.n_trials*self.payoff/self.n_options*0.1
-        self.curiosity_cost = self.n_trials*self.payoff/self.n_options*0.1
+        self.learning_cost = self.n_trials*self.payoff/self.n_options*0.1
         self.pull_cost = self.payoff/self.n_options
 
         # fitness affecting parameters
@@ -61,9 +61,9 @@ class BanditGame(Experiment):
 
         # genetic parameters
         self.allow_memory = True
-        self.allow_curiosity = True
+        self.allow_learning = True
         self.seed_memory = 1
-        self.seed_curiosity = 1
+        self.seed_learning = 1
 
         if not self.networks():
             self.setup()
@@ -113,11 +113,11 @@ class BanditGame(Experiment):
             for net in networks:
                 assert len([n for n in nodes if n.network_id == net.id]) == 1
 
-            # 1 curiosity and memory gene per node
+            # 1 learning and memory gene per node
             for node in nodes:
                 assert len([g for g in genes if g.origin_id == node.id]) == 2
                 assert len([g for g in genes if g.origin_id == node.id and g.type == "memory_gene"]) == 1
-                assert len([g for g in genes if g.origin_id == node.id and g.type == "curiosity_gene"]) == 1
+                assert len([g for g in genes if g.origin_id == node.id and g.type == "learning_gene"]) == 1
 
             # 1 vector (incoming) per node
             for node in nodes:
@@ -128,13 +128,13 @@ class BanditGame(Experiment):
             for node in nodes:
                 assert (len([d for d in decisions if d.origin_id == node.id and d.check == "false"])) == self.n_trials
 
-            # o <= checks <= curiosity
+            # o <= checks <= learning
             for node in nodes:
                 my_checks = [d for d in decisions if d.check == "true" and d.origin_id == node.id]
-                curiosity = int([g for g in genes if g.origin_id == node.id and g.type == "curiosity_gene"][0].contents)
+                learning = int([g for g in genes if g.origin_id == node.id and g.type == "learning_gene"][0].contents)
                 for t in range(self.n_trials):
                     assert len([d for d in my_checks if d.trial == t]) >= 0
-                    assert len([d for d in my_checks if d.trial == t]) <= curiosity
+                    assert len([d for d in my_checks if d.trial == t]) <= learning
 
             # all decisions have an int payoff
             for d in decisions:
@@ -162,18 +162,16 @@ class BanditGame(Experiment):
         # query all nodes, bandits, pulls and Genes
         nodes = BanditAgent.query.filter_by(participant_id=participant.id).all()
         nodes = [n for n in nodes if n.network_id in networks_ids]
-        bandits = Bandit.query.all()
         node_ids = [n.id for n in nodes]
         pulls = Pull.query.filter(Pull.origin_id.in_(node_ids)).all()
 
         for node in nodes:
-            # for every node get its curiosity and decisions
+            # for every node get its learning and decisions
             decisions = [p for p in pulls if p.origin_id == node.id and p.check == "false"]
 
             for decision in decisions:
                 # for each decision, get the bandit and the right answer
-                bandit = [b for b in bandits if b.network_id == node.network_id and b.bandit_id == decision.bandit_id][0]
-                right_answer = bandit.good_arm
+
                 num_checks = len([p for p in pulls if p.check == "true" and p.origin_id == decision.origin_id and p.trial == decision.trial])
 
                 # if they get it right score = potential score
@@ -246,10 +244,10 @@ class GeneticSource(Source):
         else:
             MemoryGene(origin=self, contents=0)
 
-        if exp.allow_curiosity:
-            CuriosityGene(origin=self, contents=exp.seed_curiosity)
+        if exp.allow_learning:
+            LearningGene(origin=self, contents=exp.seed_learning)
         else:
-            CuriosityGene(origin=self, contents=1)
+            LearningGene(origin=self, contents=1)
 
 
 class MemoryGene(Gene):
@@ -268,14 +266,14 @@ class MemoryGene(Gene):
             return 0
 
 
-class CuriosityGene(Gene):
-    """ A gene that controls your curiosity """
+class LearningGene(Gene):
+    """ A gene that controls your learning capacity """
 
-    __mapper_args__ = {"polymorphic_identity": "curiosity_gene"}
+    __mapper_args__ = {"polymorphic_identity": "learning_gene"}
 
     def _mutated_contents(self):
         exp = BanditGame(db.session)
-        if exp.allow_curiosity:
+        if exp.allow_learning:
             if random.random() < 0.5:
                 return min([max([int(self.contents) + random.sample([-1, 1], 1)[0], 1]), 10])
             else:
@@ -380,11 +378,11 @@ class BanditAgent(Agent):
 
         payoff = exp.payoff
         memory = int(self.infos(type=MemoryGene)[0].contents)
-        curiosity = int(self.infos(type=CuriosityGene)[0].contents)
+        learning = int(self.infos(type=LearningGene)[0].contents)
 
         correct_decisions = [d for d in my_decisions if [b for b in bandits if b.bandit_id == d.bandit_id][0].good_arm == int(d.contents)]
 
-        fitness = exp.f_min + len(correct_decisions)*payoff - memory*exp.memory_cost - curiosity*exp.curiosity_cost - len(my_checks)*exp.pull_cost
+        fitness = exp.f_min + len(correct_decisions)*payoff - memory*exp.memory_cost - learning*exp.learning_cost - len(my_checks)*exp.pull_cost
 
         fitness = max([fitness, 0.001])
         fitness = ((1.0*fitness)*exp.f_scale_factor)**exp.f_power_factor
