@@ -1,8 +1,10 @@
 <head>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="/static/css/wallace.css" type="text/css">
-    <script src="/static/lib/reqwest.min.js" type="text/javascript"> </script>
-    <script src="/static/js/wallace.js" type="text/javascript"> </script>
+    <link rel="stylesheet" href="/static/css/dallinger.css" type="text/css">
+    <script src="/static/scripts/reqwest.min.js" type="text/javascript"> </script>
+    <script src="/static/scripts/jquery-min.js" type="text/javascript"> </script>
+    <script src="/static/scripts/dallinger.js" type="text/javascript"> </script>
+    <script src="/static/scripts/instructions/instruct-2.js" type="text/javascript"> </script>
 </head>
 
 <div class="main_div">
@@ -11,28 +13,19 @@
 
     <hr>
     
-    <p>When you are ready to make your final decision you should click the "Ready to Decide" button. The locations you checked will return to their images and you make your final decision by clicking the desired location. The image of the chosen location will be replaced with a blue dot.</p>
-    <p>If you did not find the treasure when checking you will have to guess where to go.</p>
-
-    <p align="center">
-        <img class="example_image" src="/static/images/instruct2.png"/>
-    </p>
+    <p>More instructions</p>
 
     <hr>
 
     <div>
         <div class="row">
             <div class="col-xs-2">
-                <button type="button" class="btn btn-primary btn-lg" onClick="allow_exit();window.location='/instructions/instruct-1?hit_id={{ hit_id }}&assignment_id={{ assignment_id }}&worker_id={{ worker_id }}&mode={{ mode }}'">
-                <span class="glyphicon glyphicon-arrow-left"></span> Previous
-                </button>
+                <button type="button" class="btn btn-primary btn-lg" id="prev-button">Previous</button>
             </div>
             <div class="col-xs-8">
             </div>
             <div class="col-xs-2">
-                <button type="button" class="btn btn-primary btn-lg" onClick="allow_exit();window.location='/instructions/instruct-3?hit_id={{ hit_id }}&assignment_id={{ assignment_id }}&worker_id={{ worker_id }}&mode={{ mode }}'">
-                Next <span class="glyphicon glyphicon-arrow-right"></span>
-                </button>
+                <button type="button" class="btn btn-primary btn-lg" id="next-button">Next</button>
             </div>
         </div>
     </div>
