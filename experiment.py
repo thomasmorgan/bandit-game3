@@ -252,48 +252,6 @@ class GeneticSource(Source):
             CuriosityGene(origin=self, contents=1)
 
 
-class Bandit(Source):
-    """ a bandit that you can play with """
-
-    __mapper_args__ = {"polymorphic_identity": "bandit"}
-
-    @hybrid_property
-    def num_arms(self):
-        return int(self.property1)
-
-    @num_arms.setter
-    def num_arms(self, num_arms):
-        self.property1 = repr(num_arms)
-
-    @num_arms.expression
-    def num_arms(self):
-        return cast(self.property1, Integer)
-
-    @hybrid_property
-    def good_arm(self):
-        return int(self.property2)
-
-    @good_arm.setter
-    def good_arm(self, good_arm):
-        self.property2 = repr(good_arm)
-
-    @good_arm.expression
-    def good_arm(self):
-        return cast(self.property2, Integer)
-
-    @hybrid_property
-    def bandit_id(self):
-        return int(self.property3)
-
-    @bandit_id.setter
-    def bandit_id(self, bandit_id):
-        self.property3 = repr(bandit_id)
-
-    @bandit_id.expression
-    def bandit_id(self):
-        return cast(self.property3, Integer)
-
-
 class MemoryGene(Gene):
     """ A gene that controls the time span of your memory """
 
