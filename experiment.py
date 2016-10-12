@@ -34,6 +34,9 @@ class BanditGame(Experiment):
         self.known_classes["Pull"] = Pull
 
         """ Task parameters """
+        self.trials_per_round = 20
+        self.rounds = 10
+
         # how many bandits each node visits
         self.n_trials = 4
 
