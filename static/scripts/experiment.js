@@ -115,7 +115,8 @@ start_first_round = function() {
     round = 1;
     trial = 1;
     update_trial_text();
-    choose_two_strategies();
+    change_left_strategy();
+    change_right_strategy();
     pick_temperature();
     update_ui();
 };
@@ -125,14 +126,16 @@ update_trial_text = function() {
     $(".trial").html(trial);
 };
 
-choose_two_strategies = function() {
+change_left_strategy = function() {
     index = Math.floor(Math.random()*available_strategies.length);
     strategies.left = available_strategies[index];
     available_strategies.splice(index, 1);
     strategies.left_image = "static/images/" + strategies.left + ".png";
     strategies.left_mean_1 = Math.random();
     strategies.left_mean_2 = Math.random();
+};
 
+change_right_strategy = function() {
     index = Math.floor(Math.random()*available_strategies.length);
     strategies.right = available_strategies[index];
     available_strategies.splice(index, 1);
