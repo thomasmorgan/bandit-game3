@@ -87,7 +87,6 @@ create_agent = function() {
         type: 'json',
         success: function (resp) {
             my_node_id = resp.node.id;
-            my_network_id = resp.node.network_id;
             get_genes();
         },
         error: function (err) {
@@ -198,17 +197,46 @@ create_event_listeners = function() {
     $(".left-img").on('click', function() {
         remove_event_listeners();
         show_payoff("left");
-        setTimeout(function(){ advance_to_next_trial(); }, 3000);
+        log_decision("left");
+        setTimeout(function(){ advance_to_next_trial(); }, 2000);
     });
     $(".right-img").on('click', function() {
         remove_event_listeners();
         show_payoff("right");
-        setTimeout(function(){ advance_to_next_trial(); }, 3000);
+        log_decision("right");
+        setTimeout(function(){ advance_to_next_trial(); }, 2000);
     });
     $(".check-button").on('click', function() {
         remove_event_listeners();
         show_payoff("both");
-        setTimeout(function(){ advance_to_next_trial(); }, 3000);
+        log_decision("check");
+        setTimeout(function(){ advance_to_next_trial(); }, 2000);
+    });
+};
+
+log_decision = function(decision) {
+    if (decision == "left") {
+        payoff = strategies.left.payoff;
+    } else if (decision == "right") {
+        payoff = strategies.right.payoff;
+    } else {
+        payoff = 0;
+    }
+    dat = {
+        temperature: temperature,
+        strategies: strategies,
+        trial: trial,
+        round: round,
+        payoff: payoff
+    };
+    dat = JSON.stringify(dat);
+    reqwest({
+        url: "/info/" + my_node_id,
+        method: 'post',
+        data: {
+            contents: decision,
+            property1: dat
+        }
     });
 };
 
