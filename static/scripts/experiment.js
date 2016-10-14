@@ -20,9 +20,13 @@ available_strategies = [
     "shrimp",
     "lizards"
 ];
-var strategies = {
-    left: "none", left_image: "none", left_mean_1: "none", left_mean_2: "none",
-    right: "none", right_image: "none", right_mean_1: "none", right_mean_2: "none",
+strategies = {
+    left: {
+        name: "none", image: "none", mean_1: "none", mean_2: "none", score: "none"
+    },
+    right: {
+        name: "none", image: "none", mean_1: "none", mean_2: "none", score: "none"
+    }
 };
 temperatures = [
     "extremely cold",
@@ -37,6 +41,11 @@ temperatures = [
     "very hot",
     "extremely hot"
 ];
+temperature = {
+    number: "none",
+    name: "none",
+    image: "none"
+};
 
 $(document).ready(function() {
     get_experiment_parameters();
@@ -128,34 +137,32 @@ update_trial_text = function() {
 
 change_left_strategy = function() {
     index = Math.floor(Math.random()*available_strategies.length);
-    strategies.left = available_strategies[index];
+    strategies.left.name = available_strategies[index];
     available_strategies.splice(index, 1);
-    strategies.left_image = "static/images/" + strategies.left + ".png";
-    strategies.left_mean_1 = Math.random();
-    strategies.left_mean_2 = Math.random();
+    strategies.left.image = "static/images/" + strategies.left.name + ".png";
+    strategies.left.mean_1 = Math.random();
+    strategies.left.mean_2 = Math.random();
 };
 
 change_right_strategy = function() {
     index = Math.floor(Math.random()*available_strategies.length);
-    strategies.right = available_strategies[index];
+    strategies.right.name = available_strategies[index];
     available_strategies.splice(index, 1);
-    strategies.right_image = "static/images/" + strategies.right + ".png";
-    strategies.right_mean_1 = Math.random();
-    strategies.right_mean_2 = Math.random();
+    strategies.right.image = "static/images/" + strategies.right.name + ".png";
+    strategies.right.mean_1 = Math.random();
+    strategies.right.mean_2 = Math.random();
 };
 
 update_ui = function() {
-    $(".left-td").html("<img src=" + strategies.left_image + "></img>");
-    $(".right-td").html("<img src=" + strategies.right_image + "></img>");
+    $(".left-td").html("<img src=" + strategies.left.image + "></img>");
+    $(".right-td").html("<img src=" + strategies.right.image + "></img>");
     $(".thermometer-div").html("<img src=" + temperature.image + "></img>");
     $(".temp-description").html(temperature.name);
 };
 
 pick_temperature = function() {
     num = Math.floor(Math.random()*11);
-    temperature = {
-        number: num,
-        name: temperatures[num],
-        image: "static/images/" + num + ".png"
-    };
+    temperaturenumber = num;
+    temperature.name = temperatures[num];
+    temperature.image = "static/images/" + num + ".png";
 };
