@@ -22,10 +22,10 @@ available_strategies = [
 ];
 strategies = {
     left: {
-        name: "none", image: "none", mean_1: "none", mean_2: "none", score: "none"
+        name: "none", image: "none", mean_1: "none", mean_2: "none", payoff: "none"
     },
     right: {
-        name: "none", image: "none", mean_1: "none", mean_2: "none", score: "none"
+        name: "none", image: "none", mean_1: "none", mean_2: "none", payoff: "none"
     }
 };
 temperatures = [
@@ -124,9 +124,9 @@ start_first_round = function() {
     round = 1;
     trial = 1;
     update_trial_text();
+    pick_temperature();
     change_left_strategy();
     change_right_strategy();
-    pick_temperature();
     update_ui();
 };
 
@@ -142,6 +142,10 @@ change_left_strategy = function() {
     strategies.left.image = "static/images/" + strategies.left.name + ".png";
     strategies.left.mean_1 = Math.random();
     strategies.left.mean_2 = Math.random();
+    strategies.left.payoff = Math.round(
+        scaled_normal_pdf(temperature.number/10, strategies.left.mean_1, 0.1) +
+        scaled_normal_pdf(temperature.number/10, strategies.left.mean_2, 0.2)
+    );
 };
 
 change_right_strategy = function() {
@@ -151,6 +155,10 @@ change_right_strategy = function() {
     strategies.right.image = "static/images/" + strategies.right.name + ".png";
     strategies.right.mean_1 = Math.random();
     strategies.right.mean_2 = Math.random();
+    strategies.right.payoff = Math.round(
+        scaled_normal_pdf(temperature.number/10, strategies.right.mean_1, 0.1) +
+        scaled_normal_pdf(temperature.number/10, strategies.right.mean_2, 0.2)
+    );
 };
 
 update_ui = function() {
@@ -162,7 +170,19 @@ update_ui = function() {
 
 pick_temperature = function() {
     num = Math.floor(Math.random()*11);
-    temperaturenumber = num;
+    temperature.number = num;
     temperature.name = temperatures[num];
-    temperature.image = "static/images/" + num + ".png";
+    temperature.image = "static/images/" + temperature.number + ".png";
+};
+
+normal_pdf = function(x, u, v) {
+    exponent = -(Math.pow((x-u),2)/(2*v));
+    denominator = Math.pow((2*v*Math.PI), 0.5);
+    return (1/denominator)*Math.exp(exponent);
+};
+
+scaled_normal_pdf = function(x, u, v) {
+    density = normal_pdf(x, u, v);
+    max_density = normal_pdf(u, u, v);
+    return (density/max_density)*10;
 };
