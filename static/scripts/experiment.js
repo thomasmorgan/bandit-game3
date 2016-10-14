@@ -1,3 +1,26 @@
+available_strategies = [
+    "deer",
+    "tubers",
+    "berries",
+    "fish",
+    "mushrooms",
+    "eggs",
+    "fruits",
+    "hogs",
+    "birds",
+    "eels",
+    "clams",
+    "grubs",
+    "nuts",
+    "seeds",
+    "greens",
+    "rabbits",
+    "rats",
+    "insects",
+    "shrimp",
+    "lizards"
+];
+
 $(document).ready(function() {
     get_experiment_parameters();
     create_agent();
@@ -66,6 +89,23 @@ get_genes = function() {
                     memory_capacity = info.contents;
                 }
             }
+            start_first_round();
         }
     });
 };
+
+start_first_round = function() {
+    round = 1;
+    trial = 1;
+    update_trial_text();
+    choose_two_strategies();
+};
+
+update_trial_text = function() {
+    $(".round").html(round);
+    $(".trial").html(trial);
+};
+
+choose_two_strategies = function() {
+
+}
