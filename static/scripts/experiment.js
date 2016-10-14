@@ -110,9 +110,9 @@ get_genes = function() {
             for (i = 0; i < infos.length; i++) {
                 info = infos[i];
                 if (info.type == "learning_gene") {
-                    learning_capacity = info.contents;
+                    learning_capacity = parseInt(info.contents, 10);
                 } else {
-                    memory_capacity = info.contents;
+                    memory_capacity = parseInt(info.contents, 10);
                 }
             }
             start_first_round();
@@ -127,6 +127,7 @@ start_first_round = function() {
     pick_temperature();
     change_left_strategy();
     change_right_strategy();
+    calculate_strategy_payoffs();
     update_ui();
     create_event_listeners();
 };
@@ -143,10 +144,7 @@ change_left_strategy = function() {
     strategies.left.image = "static/images/" + strategies.left.name + ".png";
     strategies.left.mean_1 = Math.random();
     strategies.left.mean_2 = Math.random();
-    strategies.left.payoff = Math.round(
-        scaled_normal_pdf(temperature.number/10, strategies.left.mean_1, 0.1) +
-        scaled_normal_pdf(temperature.number/10, strategies.left.mean_2, 0.2)
-    );
+    
 };
 
 change_right_strategy = function() {
@@ -156,6 +154,14 @@ change_right_strategy = function() {
     strategies.right.image = "static/images/" + strategies.right.name + ".png";
     strategies.right.mean_1 = Math.random();
     strategies.right.mean_2 = Math.random();
+    
+};
+
+calculate_strategy_payoffs = function() {
+    strategies.left.payoff = Math.round(
+        scaled_normal_pdf(temperature.number/10, strategies.left.mean_1, 0.1) +
+        scaled_normal_pdf(temperature.number/10, strategies.left.mean_2, 0.2)
+    );
     strategies.right.payoff = Math.round(
         scaled_normal_pdf(temperature.number/10, strategies.right.mean_1, 0.1) +
         scaled_normal_pdf(temperature.number/10, strategies.right.mean_2, 0.2)
@@ -192,14 +198,17 @@ create_event_listeners = function() {
     $(".left-img").on('click', function() {
         remove_event_listeners();
         show_payoff("left");
+        setTimeout(function(){ advance_to_next_trial(); }, 3000);
     });
     $(".right-img").on('click', function() {
         remove_event_listeners();
         show_payoff("right");
+        setTimeout(function(){ advance_to_next_trial(); }, 3000);
     });
     $(".check-button").on('click', function() {
         remove_event_listeners();
         show_payoff("both");
+        setTimeout(function(){ advance_to_next_trial(); }, 3000);
     });
 };
 
@@ -216,4 +225,23 @@ show_payoff = function(which) {
     if (which == "right" || which == "both") {
         $(".right-td").html(strategies.right.payoff);
     }
+};
+
+advance_to_next_trial = function() {
+    trial += 1;
+    if (trial > trials_per_round) {
+        round += 1;
+        trial = 1;
+        if (Math.random() < (1/(1+memory_capacity))) {
+            change_left_strategy();
+        }
+        if (Math.random() < (1/(1+memory_capacity))) {
+            change_right_strategy();
+        }
+    }
+    update_trial_text();
+    pick_temperature();
+    calculate_strategy_payoffs();
+    update_ui();
+    create_event_listeners();
 };
