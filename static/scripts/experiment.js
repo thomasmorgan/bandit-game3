@@ -172,6 +172,12 @@ update_ui = function() {
     $(".right-td").html("<img class='right-img' src=" + strategies.right.image + "></img>");
     $(".thermometer-div").html("<img src=" + temperature.image + "></img>");
     $(".temp-description").html(temperature.name);
+
+    if (trial <= learning_capacity) {
+        $(".trial-instruct").html("You can choose one of the options and earn its payoff,<br>or you can check both options to see their payoffs without earning anything.");
+    } else {
+        $(".trial-instruct").html("You must choose one of the options and earn its payoff,<br>you cannot check both options on this trial.");
+    }
 };
 
 pick_temperature = function() {
@@ -206,12 +212,17 @@ create_event_listeners = function() {
         log_decision("right");
         setTimeout(function(){ advance_to_next_trial(); }, 2000);
     });
-    $(".check-button").on('click', function() {
-        remove_event_listeners();
-        show_payoff("both");
-        log_decision("check");
-        setTimeout(function(){ advance_to_next_trial(); }, 2000);
-    });
+    if (trial <= learning_capacity) {
+        $('.check-button').prop('disabled', false);
+        $(".check-button").on('click', function() {
+            remove_event_listeners();
+            show_payoff("both");
+            log_decision("check");
+            setTimeout(function(){ advance_to_next_trial(); }, 2000);
+        });
+    } else {
+        $('.check-button').prop('disabled', true);
+    }
 };
 
 log_decision = function(decision) {
@@ -263,18 +274,21 @@ advance_to_next_trial = function() {
         if (round > rounds) {
             allow_exit();
             go_to_page("questionnaire");
-        }
-        trial = 1;
-        if (Math.random() < (1/(1+memory_capacity))) {
-            change_left_strategy();
-        }
-        if (Math.random() < (1/(1+memory_capacity))) {
-            change_right_strategy();
+        } else {
+            trial = 1;
+            if (Math.random() < (1/(1+memory_capacity))) {
+                change_left_strategy();
+            }
+            if (Math.random() < (1/(1+memory_capacity))) {
+                change_right_strategy();
+            }
         }
     }
-    update_trial_text();
-    pick_temperature();
-    calculate_strategy_payoffs();
-    update_ui();
-    create_event_listeners();
+    if (round <= rounds) {
+        update_trial_text();
+        pick_temperature();
+        calculate_strategy_payoffs();
+        update_ui();
+        create_event_listeners();
+    }
 };
