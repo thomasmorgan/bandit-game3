@@ -128,6 +128,7 @@ start_first_round = function() {
     change_left_strategy();
     change_right_strategy();
     update_ui();
+    create_event_listeners();
 };
 
 update_trial_text = function() {
@@ -162,8 +163,8 @@ change_right_strategy = function() {
 };
 
 update_ui = function() {
-    $(".left-td").html("<img src=" + strategies.left.image + "></img>");
-    $(".right-td").html("<img src=" + strategies.right.image + "></img>");
+    $(".left-td").html("<img class='left-img' src=" + strategies.left.image + "></img>");
+    $(".right-td").html("<img class='right-img' src=" + strategies.right.image + "></img>");
     $(".thermometer-div").html("<img src=" + temperature.image + "></img>");
     $(".temp-description").html(temperature.name);
 };
@@ -185,4 +186,34 @@ scaled_normal_pdf = function(x, u, v) {
     density = normal_pdf(x, u, v);
     max_density = normal_pdf(u, u, v);
     return (density/max_density)*10;
+};
+
+create_event_listeners = function() {
+    $(".left-img").on('click', function() {
+        remove_event_listeners();
+        show_payoff("left");
+    });
+    $(".right-img").on('click', function() {
+        remove_event_listeners();
+        show_payoff("right");
+    });
+    $(".check-button").on('click', function() {
+        remove_event_listeners();
+        show_payoff("both");
+    });
+};
+
+remove_event_listeners = function () {
+    $(".left-img").off('click');
+    $(".right-img").off('click');
+    $(".check-button").off('click');
+};
+
+show_payoff = function(which) {
+    if (which == "left" || which == "both") {
+        $(".left-td").html(strategies.left.payoff);
+    }
+    if (which == "right" || which == "both") {
+        $(".right-td").html(strategies.right.payoff);
+    }
 };
