@@ -34,8 +34,8 @@ class BanditGame(Experiment):
         self.known_classes["Pull"] = Pull
 
         """ Task parameters """
-        self.trials_per_round = 20
-        self.rounds = 10
+        self.trials_per_round = 10
+        self.rounds = 20
 
         # how many bandits each node visits
         self.n_trials = 4
@@ -65,8 +65,8 @@ class BanditGame(Experiment):
         # genetic parameters
         self.allow_memory = True
         self.allow_learning = True
-        self.seed_memory = 1
-        self.seed_learning = 1
+        self.seed_memory = 0
+        self.seed_learning = 0
 
         if not self.networks():
             self.setup()
@@ -273,7 +273,7 @@ class LearningGene(Gene):
         exp = BanditGame(db.session)
         if exp.allow_learning:
             if random.random() < 0.5:
-                return min([max([int(self.contents) + random.sample([-1, 1], 1)[0], 1]), 10])
+                return max([int(self.contents) + random.sample([-1, 1], 1)[0], 0])
             else:
                 return self.contents
         else:
