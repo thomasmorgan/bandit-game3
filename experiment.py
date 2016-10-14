@@ -7,6 +7,7 @@ from dallinger.networks import DiscreteGenerational
 from dallinger.information import Gene
 import random
 from json import dumps
+import json
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
 from sqlalchemy import Integer
@@ -31,11 +32,11 @@ class BanditGame(Experiment):
 
         self.bonus_payment = 0.6
         self.initial_recruitment_size = self.generation_size
-        self.known_classes["Pull"] = Pull
+        self.known_classes["Decision"] = Decision
 
         """ Task parameters """
-        self.trials_per_round = 10
-        self.rounds = 20
+        self.trials_per_round = 1
+        self.rounds = 2
 
         # how many bandits each node visits
         self.n_trials = 4
@@ -104,7 +105,7 @@ class BanditGame(Experiment):
         genes = Gene.query.filter(Gene.origin_id.in_(node_ids)).all()
         incoming_vectors = Vector.query.filter(Vector.destination_id.in_(node_ids)).all()
         outgoing_vectors = Vector.query.filter(Vector.origin_id.in_(node_ids)).all()
-        decisions = Pull.query.filter(Pull.origin_id.in_(node_ids)).all()
+        decisions = Decision.query.filter(Decision.origin_id.in_(node_ids)).all()
 
         try:
             # 1 node per network
@@ -124,20 +125,21 @@ class BanditGame(Experiment):
 
             # n_trials decision per node
             for node in nodes:
-                assert (len([d for d in decisions if d.origin_id == node.id and d.check == "false"])) == self.n_trials
+                assert (len([d for d in decisions if d.origin_id == node.id and d.check == "false"])) == self.rounds*self.trials_per_round
 
-            # o <= checks <= learning
+            # 0 <= checks <= learning, per round
             for node in nodes:
-                my_checks = [d for d in decisions if d.check == "true" and d.origin_id == node.id]
+                my_checks = [d for d in decisions if d.contents == "check" and d.origin_id == node.id]
                 learning = int([g for g in genes if g.origin_id == node.id and g.type == "learning_gene"][0].contents)
-                for t in range(self.n_trials):
-                    assert len([d for d in my_checks if d.trial == t]) >= 0
-                    assert len([d for d in my_checks if d.trial == t]) <= learning
+                for r in range(self.rounds):
+                    assert len([c for c in my_checks if json.loads(c.property1).round == r + 1]) <= learning
 
             # all decisions have an int payoff
             for d in decisions:
-                if d.check == "false":
-                    assert isinstance(int(d.contents), int)
+                if d.contents == "check":
+                    assert json.loads(d.property1).payoff == 0
+                else:
+                    assert isinstance(int(json.loads(d.property1).payoff), int)
 
             # all nodes have a fitness
             for node in nodes:
@@ -280,70 +282,10 @@ class LearningGene(Gene):
             return 1
 
 
-class Pull(Info):
-    """ An info representing a pull on the arm of a bandit """
+class Decision(Info):
+    """ An info representing a decision made by a participant. """
 
-    __mapper_args__ = {"polymorphic_identity": "pull"}
-
-    @hybrid_property
-    def check(self):
-        return self.property1
-
-    @check.setter
-    def check(self, check):
-        self.property1 = check
-
-    @check.expression
-    def check(self):
-        return self.property1
-
-    @hybrid_property
-    def bandit_id(self):
-        return int(self.property2)
-
-    @bandit_id.setter
-    def bandit_id(self, bandit_id):
-        self.property2 = repr(bandit_id)
-
-    @bandit_id.expression
-    def bandit_id(self):
-        return cast(self.property2, Integer)
-
-    @hybrid_property
-    def remembered(self):
-        return self.property3
-
-    @remembered.setter
-    def remembered(self, remembered):
-        self.property3 = remembered
-
-    @remembered.expression
-    def remembered(self):
-        return self.property3
-
-    @hybrid_property
-    def tile(self):
-        return int(self.property4)
-
-    @tile.setter
-    def tile(self, tile):
-        self.property4 = repr(tile)
-
-    @tile.expression
-    def tile(self):
-        return cast(self.property4, Integer)
-
-    @hybrid_property
-    def trial(self):
-        return int(self.property5)
-
-    @trial.setter
-    def trial(self, trial):
-        self.property5 = repr(trial)
-
-    @trial.expression
-    def trial(self):
-        return cast(self.property5, Integer)
+    __mapper_args__ = {"polymorphic_identity": "decision"}
 
 
 class BanditAgent(Agent):
