@@ -1,12 +1,12 @@
 available_strategies = [
     "deer",
-    "tubers",
+    "roots",
     "berries",
     "fish",
     "mushrooms",
     "eggs",
-    "fruits",
-    "hogs",
+    "fruit",
+    "boar",
     "birds",
     "eels",
     "clams",
@@ -20,6 +20,10 @@ available_strategies = [
     "shrimp",
     "lizards"
 ];
+var strategies = {
+    left: "none", left_image: "none", left_mean_1: "none", left_mean_2: "none",
+    right: "none", right_image: "none", right_mean_1: "none", right_mean_2: "none",
+};
 
 $(document).ready(function() {
     get_experiment_parameters();
@@ -107,5 +111,17 @@ update_trial_text = function() {
 };
 
 choose_two_strategies = function() {
+    index = Math.floor(Math.random()*available_strategies.length);
+    strategies.left = available_strategies[index];
+    available_strategies.splice(index, 1);
+    strategies.left_image = "static/images/" + strategies.left + ".png";
+    strategies.left_mean_1 = Math.random();
+    strategies.left_mean_2 = Math.random();
 
-}
+    index = Math.floor(Math.random()*available_strategies.length);
+    strategies.right = available_strategies[index];
+    available_strategies.splice(index, 1);
+    strategies.right_image = "static/images/" + strategies.right + ".png";
+    strategies.right_mean_1 = Math.random();
+    strategies.right_mean_2 = Math.random();
+};
