@@ -103,6 +103,7 @@ start_first_round = function() {
     trial = 1;
     update_trial_text();
     choose_two_strategies();
+    update_ui();
 };
 
 update_trial_text = function() {
@@ -124,4 +125,9 @@ choose_two_strategies = function() {
     strategies.right_image = "static/images/" + strategies.right + ".png";
     strategies.right_mean_1 = Math.random();
     strategies.right_mean_2 = Math.random();
+};
+
+update_ui = function() {
+    $(".left-td").html("<img src=" + strategies.left_image + "></img>");
+    $(".right-td").html("<img src=" + strategies.right_image + "></img>");
 };
