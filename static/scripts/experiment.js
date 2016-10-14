@@ -24,6 +24,19 @@ var strategies = {
     left: "none", left_image: "none", left_mean_1: "none", left_mean_2: "none",
     right: "none", right_image: "none", right_mean_1: "none", right_mean_2: "none",
 };
+temperatures = [
+    "extremely cold",
+    "very cold",
+    "cold",
+    "chilly",
+    "cool",
+    "mild",
+    "warm",
+    "very warm",
+    "hot",
+    "very hot",
+    "extremely hot"
+];
 
 $(document).ready(function() {
     get_experiment_parameters();
@@ -103,6 +116,7 @@ start_first_round = function() {
     trial = 1;
     update_trial_text();
     choose_two_strategies();
+    pick_temperature();
     update_ui();
 };
 
@@ -130,4 +144,15 @@ choose_two_strategies = function() {
 update_ui = function() {
     $(".left-td").html("<img src=" + strategies.left_image + "></img>");
     $(".right-td").html("<img src=" + strategies.right_image + "></img>");
+    $(".thermometer-div").html("<img src=" + temperature.image + "></img>");
+    $(".temp-description").html(temperature.name);
+};
+
+pick_temperature = function() {
+    num = Math.floor(Math.random()*11);
+    temperature = {
+        number: num,
+        name: temperatures[num],
+        image: "static/images/" + num + ".png"
+    };
 };
