@@ -231,6 +231,10 @@ advance_to_next_trial = function() {
     trial += 1;
     if (trial > trials_per_round) {
         round += 1;
+        if (round > rounds) {
+            allow_exit();
+            go_to_page("questionnaire");
+        }
         trial = 1;
         if (Math.random() < (1/(1+memory_capacity))) {
             change_left_strategy();
