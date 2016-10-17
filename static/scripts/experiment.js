@@ -90,7 +90,8 @@ create_agent = function() {
             get_genes();
         },
         error: function (err) {
-            console.log(err);
+            allow_exit();
+            go_to_page("questionnaire");
         }
     });
 };
@@ -272,8 +273,7 @@ advance_to_next_trial = function() {
     if (trial > trials_per_round) {
         round += 1;
         if (round > rounds) {
-            allow_exit();
-            go_to_page("questionnaire");
+            create_agent();
         } else {
             trial = 1;
             if (Math.random() < (1/(1+memory_capacity))) {
