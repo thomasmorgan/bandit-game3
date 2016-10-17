@@ -260,9 +260,14 @@ class BanditAgent(Agent):
         self.payoff = sum([json.loads(d.property1)['payoff'] for d in decisions])
 
     def calculate_fitness(self):
+        exp = BanditGame(db.session)
+        learning = self.infos(type=LearningGene)[0].contents
+        memory = self.infos(type=MemoryGene)[0].contents
         my_generation = [n for n in self.network.nodes(type=BanditAgent) if n.generation == self.generation]
         total_payoff = sum(pow(n.payoff, 2) for n in my_generation)
-        self.fitness = pow(self.payoff, 2)/(float(total_payoff))
+
+        score = self.payoff - learning*exp.learning_cost - memory*exp.memory_cost
+        self.fitness = pow(score, 2)/(float(total_payoff))
 
     def _what(self):
         return Gene
