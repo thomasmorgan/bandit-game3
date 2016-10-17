@@ -25,7 +25,7 @@ class BanditGame(Experiment):
         self.verbose = False
         self.experiment_repeats = 1
 
-        self.generation_size = 5
+        self.generation_size = 2
         self.generations = 5
 
         self.bonus_payment = 0.6
@@ -33,7 +33,7 @@ class BanditGame(Experiment):
         self.known_classes["Decision"] = Decision
 
         """ Task parameters """
-        self.trials_per_round = 1
+        self.trials_per_round = 10
         self.rounds = 2
 
         # how much each unit of memory costs fitness
@@ -44,7 +44,7 @@ class BanditGame(Experiment):
         self.allow_memory = True
         self.allow_learning = True
         self.seed_memory = 0
-        self.seed_learning = 0
+        self.seed_learning = 5
 
         if not self.networks():
             self.setup()
