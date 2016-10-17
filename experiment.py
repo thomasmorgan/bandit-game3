@@ -6,12 +6,10 @@ from dallinger.models import Info, Network, Vector, Participant
 from dallinger.networks import DiscreteGenerational
 from dallinger.information import Gene
 import random
-from json import dumps
 import json
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
 from sqlalchemy import Integer
-from flask import Blueprint, Response
 from psiturk.psiturk_config import PsiturkConfig
 from dallinger import db
 config = PsiturkConfig()
@@ -38,30 +36,9 @@ class BanditGame(Experiment):
         self.trials_per_round = 1
         self.rounds = 2
 
-        # how many bandits each node visits
-        self.n_trials = 4
-
-        # how many bandits there are
-        self.n_bandits = 4
-
-        # how many arms each bandit has
-        self.n_options = 10
-
-        # how many times you can pull the arms
-        self.n_pulls = 10
-
-        # the payoff from getting it right
-        self.payoff = 10
-
         # how much each unit of memory costs fitness
-        self.memory_cost = self.n_trials*self.payoff/self.n_options*0.1
-        self.learning_cost = self.n_trials*self.payoff/self.n_options*0.1
-        self.pull_cost = self.payoff/self.n_options
-
-        # fitness affecting parameters
-        self.f_min = 10
-        self.f_scale_factor = 0.01
-        self.f_power_factor = 2
+        self.memory_cost = 10
+        self.learning_cost = 10
 
         # genetic parameters
         self.allow_memory = True
@@ -134,7 +111,7 @@ class BanditGame(Experiment):
                 assert len([v for v in outgoing_vectors if v.origin_id == node.id]) == 0
                 assert len([v for v in incoming_vectors if v.destination_id == node.id]) == 1
 
-            # n_trials decision per node
+            # correct numbers of decisions per node
             for node in nodes:
                 assert (len([d for d in decisions if d.origin_id == node.id and d.check == "false"])) == self.rounds*self.trials_per_round
 
