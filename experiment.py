@@ -113,7 +113,7 @@ class BanditGame(Experiment):
 
             # correct numbers of decisions per node
             for node in nodes:
-                assert (len([d for d in decisions if d.origin_id == node.id and d.check == "false"])) == self.rounds*self.trials_per_round
+                assert (len([d for d in decisions if d.origin_id == node.id])) == self.rounds*self.trials_per_round
 
             # 0 <= checks <= learning, per round
             for node in nodes:

@@ -3,8 +3,8 @@ mode = deploy
 auto_recruit = true
 
 [HIT Configuration]
-title = Treasure hunt 2
-description = Look for treasure in different locations, try to remember where it is
+title = Food collecting
+description = Collect different types of food to earn points.
 amt_keywords = Psychology, memory
 base_payment = 0.60
 lifetime = 24
