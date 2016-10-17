@@ -153,71 +153,17 @@ class BanditGame(Experiment):
             return False
 
     def bonus(self, participant):
-        total_score = 0
-
-        # get the non-practice networks:
-        networks = Network.query.all()
-        networks_ids = [n.id for n in networks if n.role != "practice"]
 
         # query all nodes, bandits, pulls and Genes
         nodes = BanditAgent.query.filter_by(participant_id=participant.id).all()
-        nodes = [n for n in nodes if n.network_id in networks_ids]
         node_ids = [n.id for n in nodes]
-        pulls = Pull.query.filter(Pull.origin_id.in_(node_ids)).all()
+        decisions = Decision.query.filter(Decision.origin_id.in_(node_ids)).all()
+        total_payoff = sum([json.loads(d.property1)['payoff'] for d in decisions])
 
-        for node in nodes:
-            # for every node get its learning and decisions
-            decisions = [p for p in pulls if p.origin_id == node.id and p.check == "false"]
+        max_bonus_payoff = 15*self.trials_per_round*self.rounds
 
-            for decision in decisions:
-                # for each decision, get the bandit and the right answer
-
-                num_checks = len([p for p in pulls if p.check == "true" and p.origin_id == decision.origin_id and p.trial == decision.trial])
-
-                # if they get it right score = potential score
-                if right_answer == int(decision.contents):
-                    score = self.n_pulls - num_checks
-                else:
-                    score = 0 - num_checks
-
-                # save this info the the decision and update the running totals
-                total_score += score
-
-        total_trials = self.n_trials * self.experiment_repeats
-
-        bonus = ((total_score/(1.0*total_trials))-1)/5.0
-
-        bonus = max(min(bonus, 1.0), 0.0)*self.bonus_payment
-
-        bonus = round(bonus, 2)
-
+        bonus = round(min(total_payoff/(1.0*max_bonus_payoff), 1.00), 2)
         return bonus
-
-    def attention_check(self, participant):
-        bandits = Bandit.query.all()
-        nodes = BanditAgent.query.filter_by(participant_id=participant.id).all()
-        pulls = []
-        for node in nodes:
-            pulls.extend(node.infos(type=Pull))
-
-        final_decisions = [p for p in pulls if p.check == "false"]
-        checks = [p for p in pulls if p.check == "true"]
-
-        times_found_treasure = 0
-        times_chose_treasure = 0
-
-        for d in final_decisions:
-            if d.remembered == "false":
-                right_answer = [b for b in bandits if b.network_id == d.network_id and b.bandit_id == d.bandit_id][0].good_arm
-                checked_tiles = [int(c.contents) for c in checks if c.network_id == d.network_id and c.trial == d.trial]
-                if right_answer in checked_tiles:
-                    times_found_treasure += 1
-                    if int(d.contents) == right_answer:
-                        times_chose_treasure += 1
-
-        diff = times_found_treasure - times_chose_treasure
-
-        return diff < 3
 
 
 class BanditGenerational(DiscreteGenerational):
