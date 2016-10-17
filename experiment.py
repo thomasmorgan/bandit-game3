@@ -96,6 +96,17 @@ class BanditGame(Experiment):
             self.log("generation finished, recruiting another")
             self.recruiter().recruit_participants(n=self.generation_size)
 
+    def submission_successful(self, participant):
+        """Calculate fitness of nodes if all nodes finished."""
+        num_approved = len(Participant.query.filter_by(status="approved").all())
+        if num_approved % self.generation_size == 0:
+            current_generation = participant.nodes[0].generation
+            nodes = BanditAgent.query.filter_by(generation=current_generation).all()
+            for n in nodes:
+                n.calculate_payoff()
+            for n in nodes:
+                n.calculate_fitness()
+
     def data_check(self, participant):
 
         # get the necessary data
@@ -250,29 +261,31 @@ class BanditAgent(Agent):
     def generation(self):
         return cast(self.property2, Integer)
 
+    @hybrid_property
+    def payoff(self):
+        return int(self.property3)
+
+    @payoff.setter
+    def payoff(self, payoff):
+        self.property3 = repr(payoff)
+
+    @payoff.expression
+    def payoff(self):
+        return cast(self.property3, Integer)
+
     def update(self, infos):
         for info in infos:
             if isinstance(info, Gene):
                 self.mutate(info_in=info)
 
+    def calculate_payoff(self):
+        decisions = self.infos(type=Decision)
+        self.payoff = sum([json.loads(d.property1)['payoff'] for d in decisions])
+
     def calculate_fitness(self):
-        exp = BanditGame(db.session)
-
-        my_decisions = Pull.query.filter_by(origin_id=self.id, check="false").all()
-        my_checks = Pull.query.filter_by(origin_id=self.id, check="true").all()
-        bandits = Bandit.query.filter_by(network_id=self.network_id).all()
-
-        payoff = exp.payoff
-        memory = int(self.infos(type=MemoryGene)[0].contents)
-        learning = int(self.infos(type=LearningGene)[0].contents)
-
-        correct_decisions = [d for d in my_decisions if [b for b in bandits if b.bandit_id == d.bandit_id][0].good_arm == int(d.contents)]
-
-        fitness = exp.f_min + len(correct_decisions)*payoff - memory*exp.memory_cost - learning*exp.learning_cost - len(my_checks)*exp.pull_cost
-
-        fitness = max([fitness, 0.001])
-        fitness = ((1.0*fitness)*exp.f_scale_factor)**exp.f_power_factor
-        self.fitness = fitness
+        my_generation = [n for n in self.network.nodes(type=BanditAgent) if n.generation == self.generation]
+        total_payoff = sum(pow(n.payoff, 2) for n in my_generation)
+        self.fitness = pow(self.payoff, 2)/(float(total_payoff))
 
     def _what(self):
         return Gene
