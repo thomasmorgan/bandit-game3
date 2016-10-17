@@ -276,27 +276,3 @@ class BanditAgent(Agent):
 
     def _what(self):
         return Gene
-
-
-extra_routes = Blueprint(
-    'extra_routes', __name__,
-    template_folder='templates',
-    static_folder='static')
-
-
-@extra_routes.route("/node/<int:node_id>/calculate_fitness", methods=["GET"])
-def calculate_fitness(node_id):
-
-    exp = BanditGame(db.session)
-    node = BanditAgent.query.get(node_id)
-    if node is None:
-        exp.log("Error: /node/{}/calculate_fitness, node {} does not exist".format(node_id))
-        page = exp.error_page(error_type="/node/calculate_fitness, node does not exist")
-        js = dumps({"status": "error", "html": page})
-        return Response(js, status=400, mimetype='application/json')
-
-    node.calculate_fitness()
-    exp.save()
-
-    data = {"status": "success"}
-    return Response(dumps(data), status=200, mimetype='application/json')
