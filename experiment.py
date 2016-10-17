@@ -300,34 +300,3 @@ def calculate_fitness(node_id):
 
     data = {"status": "success"}
     return Response(dumps(data), status=200, mimetype='application/json')
-
-
-@extra_routes.route("/num_trials", methods=["GET"])
-def get_num_trials():
-    exp = BanditGame(db.session)
-    data = {"status": "success",
-            "experiment_repeats": exp.experiment_repeats,
-            "practice_repeats": exp.practice_repeats,
-            "n_trials": exp.n_trials}
-    return Response(dumps(data), status=200, mimetype='application/json')
-
-
-@extra_routes.route("/num_bandits", methods=["GET"])
-def get_num_bandits():
-    exp = BanditGame(db.session)
-    data = {"status": "success", "num_bandits": exp.n_bandits}
-    return Response(dumps(data), status=200, mimetype='application/json')
-
-
-@extra_routes.route("/num_arms/<int:network_id>/<int:bandit_id>", methods=["GET"])
-def get_num_arms(network_id, bandit_id):
-    bandit = Bandit.query.filter_by(network_id=network_id, bandit_id=bandit_id).one()
-    data = {"status": "success", "num_arms": bandit.num_arms}
-    return Response(dumps(data), status=200, mimetype='application/json')
-
-
-@extra_routes.route("/good_arm/<int:network_id>/<int:bandit_id>", methods=["GET"])
-def good_arm(network_id, bandit_id):
-    bandit = Bandit.query.filter_by(network_id=network_id, bandit_id=bandit_id).one()
-    data = {"status": "success", "good_arm": bandit.good_arm}
-    return Response(dumps(data), status=200, mimetype='application/json')
