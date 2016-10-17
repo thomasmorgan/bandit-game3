@@ -193,7 +193,7 @@ class GeneticSource(Source):
         if exp.allow_learning:
             LearningGene(origin=self, contents=exp.seed_learning)
         else:
-            LearningGene(origin=self, contents=1)
+            LearningGene(origin=self, contents=0)
 
 
 class MemoryGene(Gene):
