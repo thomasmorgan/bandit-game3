@@ -159,12 +159,12 @@ change_right_strategy = function() {
 
 calculate_strategy_payoffs = function() {
     strategies.left.payoff = Math.round(
-        scaled_normal_pdf(temperature.number/10, strategies.left.mean_1, 0.1) +
-        scaled_normal_pdf(temperature.number/10, strategies.left.mean_2, 0.2)
+        scaled_normal_pdf(temperature.number/10.0, strategies.left.mean_1, 0.01) +
+        scaled_normal_pdf(temperature.number/10.0, strategies.left.mean_2, 0.04)
     );
     strategies.right.payoff = Math.round(
-        scaled_normal_pdf(temperature.number/10, strategies.right.mean_1, 0.1) +
-        scaled_normal_pdf(temperature.number/10, strategies.right.mean_2, 0.2)
+        scaled_normal_pdf(temperature.number/10.0, strategies.right.mean_1, 0.01) +
+        scaled_normal_pdf(temperature.number/10.0, strategies.right.mean_2, 0.04)
     );
 };
 
