@@ -121,6 +121,7 @@ get_genes = function() {
 };
 
 start_first_round = function() {
+    total_payoff = 0;
     round = 1;
     trial = 1;
     update_trial_text();
@@ -234,6 +235,8 @@ log_decision = function(decision) {
     } else {
         payoff = 0;
     }
+    total_payoff = total_payoff + payoff;
+    update_payoff_text();
     dat = {
         temperature: temperature,
         strategies: strategies,
@@ -251,6 +254,10 @@ log_decision = function(decision) {
             property1: dat
         }
     });
+};
+
+update_payoff_text = function() {
+    $(".payoff-text").html(total_payoff);
 };
 
 remove_event_listeners = function () {
