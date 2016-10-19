@@ -1,5 +1,5 @@
 [Experiment Configuration]
-mode = deploy
+mode = sandbox
 auto_recruit = true
 
 [HIT Configuration]
@@ -24,12 +24,14 @@ anonymize_data = false
 database_size = standard-2
 
 [Server Parameters]
-dyno_type = performance-m
-num_dynos_web = 3
-num_dynos_worker = 1
+dyno_type = standard-2x
+num_dynos_web = 1
+num_dynos_worker = 2
 host = 0.0.0.0
 notification_url = None
+clock_on = true
+logfile = -
 
 [Shell Parameters]
-launch_in_sandbox_mode = false
+launch_in_sandbox_mode = true
 
