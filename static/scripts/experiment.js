@@ -248,10 +248,10 @@ log_decision = function(decision) {
     reqwest({
         url: "/info/" + my_node_id,
         method: 'post',
-        info_type: 'Decision',
         data: {
             contents: decision,
-            property1: dat
+            property1: dat,
+            info_type: 'Decision'
         }
     });
 };
