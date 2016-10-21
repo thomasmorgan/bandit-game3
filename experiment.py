@@ -129,10 +129,6 @@ class BanditGame(Experiment):
                 else:
                     assert isinstance(int(json.loads(d.property1)['payoff']), int)
 
-            # all nodes have a fitness
-            for node in nodes:
-                assert isinstance(node.fitness, float)
-
             self.log("Data check passed")
             return True
         except:
