@@ -120,14 +120,14 @@ class BanditGame(Experiment):
                 my_checks = [d for d in decisions if d.contents == "check" and d.origin_id == node.id]
                 learning = int([g for g in genes if g.origin_id == node.id and g.type == "learning_gene"][0].contents)
                 for r in range(self.rounds):
-                    assert len([c for c in my_checks if json.loads(c.property1).round == r + 1]) <= learning
+                    assert len([c for c in my_checks if json.loads(c.property1)['round'] == r + 1]) <= learning
 
             # all decisions have an int payoff
             for d in decisions:
                 if d.contents == "check":
-                    assert json.loads(d.property1).payoff == 0
+                    assert json.loads(d.property1)['payoff'] == 0
                 else:
-                    assert isinstance(int(json.loads(d.property1).payoff), int)
+                    assert isinstance(int(json.loads(d.property1)['payoff']), int)
 
             # all nodes have a fitness
             for node in nodes:
