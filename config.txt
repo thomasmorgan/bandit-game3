@@ -1,6 +1,16 @@
 [Experiment Configuration]
 mode = sandbox
 auto_recruit = true
+generation_size = 2
+generations = 10
+trials_per_round = 10
+rounds = 2
+learning_cost = 10
+memory_cost = 10
+allow_learning = true
+allow_memory = true
+seed_memory = 0
+seed_learning = 5
 
 [HIT Configuration]
 title = Food collecting

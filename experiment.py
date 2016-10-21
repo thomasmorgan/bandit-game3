@@ -11,40 +11,24 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
 from sqlalchemy import Integer
 from psiturk.psiturk_config import PsiturkConfig
-from dallinger import db
-config = PsiturkConfig()
+from dallinger import config as dalcon
+config = dalcon.experiment_configuration
+cfg = PsiturkConfig()
 
 
 class BanditGame(Experiment):
 
     def __init__(self, session):
         super(BanditGame, self).__init__(session)
-
-        """ Experiment parameters """
         self.task = "The Bandit Game"
         self.verbose = False
         self.experiment_repeats = 1
 
-        self.generation_size = 2
-        self.generations = 5
-
-        self.bonus_payment = 0.6
-        self.initial_recruitment_size = self.generation_size
+        self.initial_recruitment_size = config.generation_size
         self.known_classes["Decision"] = Decision
 
-        """ Task parameters """
-        self.trials_per_round = 10
-        self.rounds = 2
-
-        # how much each unit of memory costs fitness
-        self.memory_cost = 10
-        self.learning_cost = 10
-
-        # genetic parameters
-        self.allow_memory = True
-        self.allow_learning = True
-        self.seed_memory = 0
-        self.seed_learning = 5
+        self.trials_per_round = config.trials_per_round
+        self.rounds = config.rounds
 
         if not self.networks():
             self.setup()
@@ -58,8 +42,8 @@ class BanditGame(Experiment):
 
     def create_network(self):
         """Return a new network."""
-        return BanditGenerational(generations=self.generations,
-                                  generation_size=self.generation_size,
+        return BanditGenerational(generations=config.generations,
+                                  generation_size=config.generation_size,
                                   initial_source=True)
 
     def create_node(self, participant, network):
@@ -69,14 +53,14 @@ class BanditGame(Experiment):
     def recruit(self):
         """Recruit participants if necessary."""
         num_approved = len(Participant.query.filter_by(status="approved").all())
-        if num_approved % self.generation_size == 0 and num_approved != self.generations*self.generation_size:
+        if num_approved % config.generation_size == 0 and num_approved != config.generations*config.generation_size:
             self.log("generation finished, recruiting another")
-            self.recruiter().recruit_participants(n=self.generation_size)
+            self.recruiter().recruit_participants(n=config.generation_size)
 
     def submission_successful(self, participant):
         """Calculate fitness of nodes if all nodes finished."""
         num_approved = len(Participant.query.filter_by(status="approved").all())
-        if num_approved % self.generation_size == 0:
+        if num_approved % config.generation_size == 0:
             current_generation = participant.nodes[0].generation
             nodes = BanditAgent.query.filter_by(generation=current_generation).all()
             for n in nodes:
@@ -113,13 +97,13 @@ class BanditGame(Experiment):
 
             # correct numbers of decisions per node
             for node in nodes:
-                assert (len([d for d in decisions if d.origin_id == node.id])) == self.rounds*self.trials_per_round
+                assert (len([d for d in decisions if d.origin_id == node.id])) == config.rounds*config.trials_per_round
 
             # 0 <= checks <= learning, per round
             for node in nodes:
                 my_checks = [d for d in decisions if d.contents == "check" and d.origin_id == node.id]
                 learning = int([g for g in genes if g.origin_id == node.id and g.type == "learning_gene"][0].contents)
-                for r in range(self.rounds):
+                for r in range(config.rounds):
                     assert len([c for c in my_checks if json.loads(c.property1)['round'] == r + 1]) <= learning
 
             # all decisions have an int payoff
@@ -144,7 +128,7 @@ class BanditGame(Experiment):
         decisions = Decision.query.filter(Decision.origin_id.in_(node_ids)).all()
         total_payoff = sum([json.loads(d.property1)['payoff'] for d in decisions])
 
-        max_bonus_payoff = 15*self.trials_per_round*self.rounds
+        max_bonus_payoff = 15*config.trials_per_round*config.rounds
 
         bonus = round(min(total_payoff/(1.0*max_bonus_payoff), 1.00), 2)
         return bonus
@@ -168,14 +152,13 @@ class GeneticSource(Source):
         return Gene
 
     def create_genes(self):
-        exp = BanditGame(db.session)
-        if exp.allow_memory:
-            MemoryGene(origin=self, contents=exp.seed_memory)
+        if config.allow_memory:
+            MemoryGene(origin=self, contents=config.seed_memory)
         else:
             MemoryGene(origin=self, contents=0)
 
-        if exp.allow_learning:
-            LearningGene(origin=self, contents=exp.seed_learning)
+        if config.allow_learning:
+            LearningGene(origin=self, contents=config.seed_learning)
         else:
             LearningGene(origin=self, contents=0)
 
@@ -186,8 +169,7 @@ class MemoryGene(Gene):
     __mapper_args__ = {"polymorphic_identity": "memory_gene"}
 
     def _mutated_contents(self):
-        exp = BanditGame(db.session)
-        if exp.allow_memory:
+        if config.allow_memory:
             if random.random() < 0.5:
                 return max([int(self.contents) + random.sample([-1, 1], 1)[0], 0])
             else:
@@ -202,8 +184,7 @@ class LearningGene(Gene):
     __mapper_args__ = {"polymorphic_identity": "learning_gene"}
 
     def _mutated_contents(self):
-        exp = BanditGame(db.session)
-        if exp.allow_learning:
+        if config.allow_learning:
             if random.random() < 0.5:
                 return max([int(self.contents) + random.sample([-1, 1], 1)[0], 0])
             else:
@@ -256,13 +237,12 @@ class BanditAgent(Agent):
         self.payoff = sum([json.loads(d.property1)['payoff'] for d in decisions])
 
     def calculate_fitness(self):
-        exp = BanditGame(db.session)
         learning = self.infos(type=LearningGene)[0].contents
         memory = self.infos(type=MemoryGene)[0].contents
         my_generation = [n for n in self.network.nodes(type=BanditAgent) if n.generation == self.generation]
         total_payoff = sum(pow(n.payoff, 2) for n in my_generation)
 
-        score = self.payoff - learning*exp.learning_cost - memory*exp.memory_cost
+        score = self.payoff - learning*config.learning_cost - memory*config.memory_cost
         self.fitness = pow(score, 2)/(float(total_payoff))
 
     def _what(self):
