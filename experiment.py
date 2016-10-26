@@ -237,8 +237,8 @@ class BanditAgent(Agent):
         self.payoff = sum([json.loads(d.property1)['payoff'] for d in decisions])
 
     def calculate_fitness(self):
-        learning = self.infos(type=LearningGene)[0].contents
-        memory = self.infos(type=MemoryGene)[0].contents
+        learning = int(self.infos(type=LearningGene)[0].contents)
+        memory = int(self.infos(type=MemoryGene)[0].contents)
         score = max(self.payoff - learning*config.learning_cost - memory*config.memory_cost, 0)
         self.fitness = pow(score, 2)
 
