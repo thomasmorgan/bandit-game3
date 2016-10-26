@@ -61,7 +61,7 @@ class BanditGame(Experiment):
         """Calculate fitness of nodes if all nodes finished."""
         num_approved = len(Participant.query.filter_by(status="approved").all())
         if num_approved % config.generation_size == 0:
-            current_generation = participant.nodes[0].generation
+            current_generation = participant.nodes()[0].generation
             nodes = BanditAgent.query.filter_by(generation=current_generation).all()
             for n in nodes:
                 n.calculate_payoff()
