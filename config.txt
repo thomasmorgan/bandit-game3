@@ -2,21 +2,21 @@
 mode = sandbox
 auto_recruit = true
 generation_size = 2
-generations = 10
+generations = 2
 trials_per_round = 10
-rounds = 2
+rounds = 10
 learning_cost = 10
 memory_cost = 10
 allow_learning = true
 allow_memory = true
 seed_memory = 0
-seed_learning = 5
+seed_learning = 0
 
 [HIT Configuration]
 title = Food collecting
 description = Collect different types of food to earn points.
 amt_keywords = Psychology, memory
-base_payment = 0.60
+base_payment = 1.00
 lifetime = 24
 duration = 0.3
 us_only = true
@@ -34,9 +34,9 @@ anonymize_data = false
 database_size = standard-2
 
 [Server Parameters]
-dyno_type = standard-2x
+dyno_type = performance-m
 num_dynos_web = 1
-num_dynos_worker = 2
+num_dynos_worker = 1
 host = 0.0.0.0
 notification_url = None
 clock_on = true
