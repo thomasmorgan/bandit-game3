@@ -239,11 +239,8 @@ class BanditAgent(Agent):
     def calculate_fitness(self):
         learning = self.infos(type=LearningGene)[0].contents
         memory = self.infos(type=MemoryGene)[0].contents
-        my_generation = [n for n in self.network.nodes(type=BanditAgent) if n.generation == self.generation]
-        total_payoff = sum(pow(n.payoff, 2) for n in my_generation)
-
-        score = self.payoff - learning*config.learning_cost - memory*config.memory_cost
-        self.fitness = pow(score, 2)/(float(total_payoff))
+        score = max(self.payoff - learning*config.learning_cost - memory*config.memory_cost, 0)
+        self.fitness = pow(score, 2)
 
     def _what(self):
         return Gene
