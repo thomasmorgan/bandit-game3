@@ -128,7 +128,7 @@ class BanditGame(Experiment):
         decisions = Decision.query.filter(Decision.origin_id.in_(node_ids)).all()
         total_payoff = sum([json.loads(d.property1)['payoff'] for d in decisions])
 
-        max_bonus_payoff = 15*config.trials_per_round*config.rounds
+        max_bonus_payoff = 12*config.trials_per_round*config.rounds
 
         bonus = round(min(total_payoff/(1.0*max_bonus_payoff), 1.00), 2)
         return bonus
