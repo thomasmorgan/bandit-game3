@@ -1,8 +1,8 @@
 [Experiment Configuration]
-mode = sandbox
+mode = deploy
 auto_recruit = true
-generation_size = 3
-generations = 2
+generation_size = 10
+generations = 6
 trials_per_round = 10
 rounds = 10
 learning_cost = 10
@@ -43,5 +43,5 @@ clock_on = true
 logfile = -
 
 [Shell Parameters]
-launch_in_sandbox_mode = true
+launch_in_sandbox_mode = false
 
