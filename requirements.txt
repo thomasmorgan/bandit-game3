@@ -1,1 +1,1 @@
--e git://github.com/Dallinger/Dallinger.git@fix-clock-and-worker-processes#egg=dallinger
+-e git://github.com/Dallinger/Dallinger.git#egg=dallinger
