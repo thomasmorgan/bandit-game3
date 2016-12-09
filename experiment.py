@@ -150,38 +150,7 @@ class BanditGenerational(DiscreteGenerational):
     __mapper_args__ = {"polymorphic_identity": "bandit_generational"}
 
     def add_node(self, node):
-        """Link the agent to a random member of the previous generation."""
-        nodes = [n for n in self.nodes() if not isinstance(n, Source)]
-        num_agents = len(nodes)
-        curr_generation = int((num_agents - 1) / float(self.generation_size))
-        node.generation = curr_generation
-
-        if curr_generation == 0:
-            if self.initial_source:
-                source = min(
-                    self.nodes(type=Source),
-                    key=attrgetter('creation_time'))
-                source.connect(whom=node)
-                source.transmit(to_whom=node)
-        else:
-            prev_agents = BanditAgent.query\
-                .filter_by(failed=False,
-                           network_id=self.id,
-                           generation=(curr_generation - 1))\
-                .all()
-            prev_fits = [p.fitness for p in prev_agents]
-            prev_probs = [(f / (1.0 * sum(prev_fits))) for f in prev_fits]
-
-            rnd = random.random()
-            temp = 0.0
-            for i, probability in enumerate(prev_probs):
-                temp += probability
-                if temp > rnd:
-                    parent = prev_agents[i]
-                    break
-
-            parent.connect(whom=node)
-            parent.transmit(to_whom=node)
+        super(BanditGenerational, self).add_node(node=node)
         node.receive()
 
 
