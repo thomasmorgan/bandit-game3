@@ -63,6 +63,7 @@ get_experiment_parameters = function () {
         },
         error: function (err) {
             console.log(err);
+            create_agent();
         }
     });
     reqwest({
@@ -75,6 +76,7 @@ get_experiment_parameters = function () {
         },
         error: function (err) {
             console.log(err);
+            create_agent();
         }
     });
 };
@@ -116,6 +118,9 @@ get_genes = function() {
                 }
             }
             start_first_round();
+        },
+        error: function (err) {
+            create_agent();
         }
     });
 };
@@ -252,6 +257,9 @@ log_decision = function(decision) {
             contents: decision,
             property1: dat,
             info_type: 'Decision'
+        },
+        error: function (err) {
+            create_agent();
         }
     });
 };
