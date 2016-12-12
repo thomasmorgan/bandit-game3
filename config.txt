@@ -1,8 +1,8 @@
 [Experiment Configuration]
 mode = deploy
 auto_recruit = true
-generation_size = 10
-generations = 6
+generation_size = 40
+generations = 40
 trials_per_round = 10
 rounds = 10
 learning_cost = 4
@@ -21,7 +21,7 @@ lifetime = 24
 duration = 0.3
 us_only = true
 approve_requirement = 95
-contact_email_on_error = thomas.j.h.morgan@asu.edu
+contact_email_on_error = suchow@berkeley.edu
 ad_group = Foraging
 psiturk_keywords = memory
 organization_name = Arizona State University
@@ -35,7 +35,7 @@ database_size = standard-2
 
 [Server Parameters]
 dyno_type = performance-m
-num_dynos_web = 1
+num_dynos_web = 3
 num_dynos_worker = 1
 host = 0.0.0.0
 notification_url = None
