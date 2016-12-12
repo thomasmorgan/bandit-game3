@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $("#consent").prop('disabled', true);
+    $("#consent").hide();
 
     $("#print-consent").click(function() {
         window.print();
@@ -44,7 +44,8 @@ create_participant = function() {
             success: function(resp) {
                 console.log(resp);
                 participant_id = resp.participant.id;
-                $("#consent").prop('disabled', false);
+                $("#consent").show();
+                $("#refresh-prompt").hide();
             },
             error: function (err) {
                 errorResponse = JSON.parse(err.response);
