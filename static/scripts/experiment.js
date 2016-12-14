@@ -183,8 +183,10 @@ update_ui = function() {
 
     if (trial <= learning_capacity) {
         $(".trial-instruct").html("You can choose one of the options and earn its payoff,<br>or you can check both options to see their payoffs without earning anything.");
+        $(".trial-instruct-lower").html("Click on the images to choose an option, or click the 'check' button to check both strategies without earning a payoff.");
     } else {
         $(".trial-instruct").html("You must choose one of the options and earn its payoff,<br>you cannot check both options on this trial.");
+        $(".trial-instruct-lower").html("Click on the images to choose an option.");
     }
 };
 
