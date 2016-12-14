@@ -48,6 +48,7 @@ temperature = {
 };
 
 $(document).ready(function() {
+    $(".payoff-p").hide();
     get_experiment_parameters();
     create_agent();
 });
