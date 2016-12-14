@@ -275,11 +275,17 @@ remove_event_listeners = function () {
 };
 
 show_payoff = function(which) {
-    if (which == "left" || which == "both") {
+    if (which == "both") {
         $(".left-td").html(strategies.left.payoff);
-    }
-    if (which == "right" || which == "both") {
         $(".right-td").html(strategies.right.payoff);
+    }
+    else if (which == "left") {
+        $(".left-td").html("X");
+        $(".right-td").html("");
+    }
+    else if (which == "right") {
+        $(".right-td").html("X");
+        $(".left-td").html("");
     }
 };
 
