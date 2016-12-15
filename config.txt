@@ -13,7 +13,7 @@ seed_memory = 0
 seed_learning = 0
 
 [HIT Configuration]
-title = Food collecting
+title = Food collecting 2
 description = Collect different types of food to earn points.
 amt_keywords = Psychology, memory
 base_payment = 1.00
