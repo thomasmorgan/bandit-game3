@@ -201,7 +201,7 @@ class LearningGene(Gene):
             else:
                 return self.contents
         else:
-            return 1
+            return 0
 
 
 class Decision(Info):
