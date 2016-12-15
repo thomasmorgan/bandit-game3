@@ -1,8 +1,8 @@
 [Experiment Configuration]
 mode = deploy
 auto_recruit = true
-generation_size = 40
-generations = 40
+generation_size = 3
+generations = 3
 trials_per_round = 10
 rounds = 10
 learning_cost = 4
