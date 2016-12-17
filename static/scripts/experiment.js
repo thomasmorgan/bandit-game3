@@ -223,7 +223,7 @@ create_event_listeners = function() {
         setTimeout(function(){ advance_to_next_trial(); }, 2000);
     });
     if (trial <= learning_capacity) {
-        $('.check-button').prop('disabled', false);
+        $('.check-button').show();
         $(".check-button").on('click', function() {
             remove_event_listeners();
             show_payoff("both");
@@ -231,7 +231,7 @@ create_event_listeners = function() {
             setTimeout(function(){ advance_to_next_trial(); }, 2000);
         });
     } else {
-        $('.check-button').prop('disabled', true);
+        $('.check-button').hide();
     }
 };
 
