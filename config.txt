@@ -9,8 +9,8 @@ learning_cost = 4
 memory_cost = 10
 allow_learning = true
 allow_memory = true
-seed_memory = 0
-seed_learning = 0
+seed_memory = 1
+seed_learning = 1
 
 [HIT Configuration]
 title = Food collecting 2

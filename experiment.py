@@ -182,7 +182,7 @@ class MemoryGene(Gene):
     def _mutated_contents(self):
         if config.allow_memory:
             if random.random() < 0.5:
-                return max([int(self.contents) + random.sample([-1, 1], 1)[0], 0])
+                return max([int(self.contents) + random.sample([-1, 1], 1)[0], 1])
             else:
                 return self.contents
         else:
@@ -197,7 +197,7 @@ class LearningGene(Gene):
     def _mutated_contents(self):
         if config.allow_learning:
             if random.random() < 0.5:
-                return max([int(self.contents) + random.sample([-1, 1], 1)[0], 0])
+                return max([int(self.contents) + random.sample([-1, 1], 1)[0], 1])
             else:
                 return self.contents
         else:
