@@ -116,6 +116,10 @@ get_genes = function() {
                     learning_capacity = parseInt(info.contents, 10);
                 } else {
                     memory_capacity = parseInt(info.contents, 10);
+                    rounds_to_change = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+                    for (j=0; j<min(memory_capacity, 9); j++) {
+                        rounds_to_change.splice(Math.floor(Math.random()*rounds_to_change.length), 1);
+                    }
                 }
             }
             start_first_round();
@@ -300,10 +304,8 @@ advance_to_next_trial = function() {
             create_agent();
         } else {
             trial = 1;
-            if (Math.random() < (1/(1+memory_capacity))) {
+            if(jQuery.inArray(round, rounds_to_change) !== -1) {
                 change_left_strategy();
-            }
-            if (Math.random() < (1/(1+memory_capacity))) {
                 change_right_strategy();
             }
         }
