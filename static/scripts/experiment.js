@@ -117,7 +117,7 @@ get_genes = function() {
                 } else {
                     memory_capacity = parseInt(info.contents, 10);
                     rounds_to_change = [2, 3, 4, 5, 6, 7, 8, 9, 10];
-                    for (j=0; j<min(memory_capacity, 9); j++) {
+                    for (j=0; j<Math.min(memory_capacity, 9); j++) {
                         rounds_to_change.splice(Math.floor(Math.random()*rounds_to_change.length), 1);
                     }
                 }
